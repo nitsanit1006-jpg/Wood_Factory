@@ -1,0 +1,25 @@
+<form action="/update_supplier/{{ supplier.id }}" method="POST">
+  <input
+    type="text"
+    name="supplier_name"
+    value="{{ supplier.supplier_name }}"
+    required
+  />
+
+  <input
+    type="text"
+    name="contact_person"
+    value="{{ supplier.contact_person }}"
+    required
+  />
+
+  <input type="text" name="phone" value="{{ supplier.phone }}" required />
+
+  <input type="text" name="city" value="{{ supplier.city }}" required />
+
+  <input type="email" name="email" value="{{ supplier.email }}" required />
+
+  <input type="text" name="gst" value="{{ supplier.gst }}" />
+
+  <button type="submit">Update Supplier</button>
+</form>

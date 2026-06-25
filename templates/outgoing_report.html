@@ -1,0 +1,187 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 15mm;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: white;
+        color: black;
+        padding: 20px;
+        margin: 0;
+      }
+
+      .invoice-box {
+        width: 100%;
+        border: 1px solid black;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: solid black;
+        padding-bottom: 15px;
+      }
+
+      .company-name {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .report-info {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 13px;
+      }
+
+      .section-title {
+        margin-top: 1px;
+        margin-bottom: 0.3px;
+        font-size: 18px;
+        font-weight: bold;
+        padding-bottom: 5px;
+        border: none;
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th {
+        background: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+      }
+
+      td {
+        padding: 8px;
+        text-align: center;
+      }
+
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 5px 0;
+      }
+
+      .summary-table th,
+      .summary-table td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: center;
+      }
+
+      .summary-table th {
+        font-weight: bold;
+      }
+
+      .footer {
+        margin-top: 30px;
+        text-align: center;
+        border-top: 1px solid black;
+        padding-top: 10px;
+        font-size: 12px;
+      }
+
+      .profit {
+        font-weight: bold;
+      }
+
+      .loss {
+        font-weight: bold;
+      }
+
+      .page-break {
+        page-break-before: always;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="invoice-box">
+      <div class="header">
+        <div class="company-name">{{ settings.company_name }}</div>
+
+        <div class="report-info">
+          <b>Report Period:</b> {{ from_date }} to {{ to_date }}<br />
+          <b>Generated On:</b> {{ current_date }}
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="section-title">Business Summary</div>
+
+      <table class="summary-table">
+        <tr>
+          <th>Total Revenue</th>
+          <th>Purchase Cost</th>
+          <th>Net Profit</th>
+          <th>Total Imports</th>
+          <th>Total Exports</th>
+        </tr>
+
+        <tr>
+          <td>₹ {{ "{:,.2f}".format(total_revenue) }}</td>
+          <td>₹ {{ "{:,.2f}".format(purchase_cost) }}</td>
+          <td>₹ {{ "{:,.2f}".format(total_profit) }}</td>
+          <td>{{ imports.import_kg }} KG / {{ imports.import_ton }} Ton</td>
+          <td>{{ exports.export_kg }} KG / {{ exports.export_ton }} Ton</td>
+        </tr>
+      </table>
+
+      <!-- Incoming Records -->
+
+      <!-- Outgoing Records -->
+
+      <div class="section-title">Outgoing Wood Details</div>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Wood</th>
+          <th>Customer</th>
+          <th>Qty</th>
+          <th>Unit</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+
+        {% for row in outgoing_records %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td>{{ row.wood_name }}</td>
+          <td>{{ row.customer_name }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.unit }}</td>
+          <td>₹ {{ row.rate }}</td>
+          <td>₹ {{ row.total_amount }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>

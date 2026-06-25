@@ -1,0 +1,375 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports & Analytics</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: #f5f1ea;
+        display: flex;
+      }
+
+      .sidebar {
+        width: 260px;
+        height: 100vh;
+        background: #2c241b;
+        color: white;
+        position: fixed;
+        padding: 25px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .logo h2 {
+        color: #d2b48c;
+      }
+
+      .menu {
+        list-style: none;
+      }
+
+      .menu li {
+        margin: 10px 0;
+      }
+
+      .menu a {
+        display: block;
+        padding: 14px;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+      }
+
+      .menu a:hover {
+        background: #8b5e3c;
+      }
+
+      .main {
+        margin-left: 260px;
+        padding: 30px;
+        width: calc(100% - 260px);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .export-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .pdf {
+        background: #dc3545;
+        color: white;
+      }
+
+      .excel {
+        background: #198754;
+        color: white;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .card h4 {
+        color: #777;
+      }
+
+      .card h2 {
+        margin-top: 10px;
+        color: #2c241b;
+      }
+
+      .filter-box {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .filter-box input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      .chart-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+
+      .chart-box {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .table-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .table-box {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #8b5e3c;
+        color: white;
+        padding: 12px;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+        <h2>
+          🪵 {{ settings.company_name if settings and settings.company_name else
+          "JONDHALE SAW MILL" }}
+        </h2>
+      </div>
+
+      <ul class="menu">
+        <li><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li><a href="{{ url_for('inventory') }}">📦 Wood Inventory</a></li>
+        <li><a href="{{ url_for('incoming') }}">🚚 Incoming Wood</a></li>
+        <li><a href="{{ url_for('outgoing') }}">📤 Outgoing Wood</a></li>
+        <li><a href="{{ url_for('suppliers') }}">🏭 Suppliers</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}">📈 Reports</a></li>
+        <li><a href="/settings">⚙ Settings</a></li>
+        <li><a href="/logout">🚪 Logout</a></li>
+      </ul>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>📈 Reports & Analytics</h1>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h4>Total Revenue</h4>
+          <h2>₹{{ "{:,.2f}".format(total_revenue) }}</h2>
+        </div>
+
+        <div class="card">
+          <h4>Total Imports</h4>
+          <h2>{{ total_imports_kg }} KG / {{ total_imports_ton }} Ton</h2>
+        </div>
+
+        <div class="card">
+          <h4>Total Exports</h4>
+          <h2>{{ total_exports_kg }} KG / {{ total_exports_ton }} Ton</h2>
+        </div>
+
+        <div class="card">
+          <h4>Net Profit</h4>
+          <h2>₹{{ "{:,.2f}".format(total_profit) }}</h2>
+        </div>
+      </div>
+
+      <form method="GET" action="/reports" class="filter-box">
+        <label>From</label>
+        <input type="date" name="from_date" value="{{ from_date }}" required />
+
+        <label>To</label>
+        <input type="date" name="to_date" value="{{ to_date }}" required />
+
+        <div class="export-buttons">
+          <button type="button" class="btn pdf" onclick="generateFullReport()">
+            Full Report
+          </button>
+
+          <button
+            type="button"
+            class="btn excel"
+            onclick="generateIncomingReport()"
+          >
+            Incoming Report
+          </button>
+
+          <button
+            type="button"
+            class="btn excel"
+            onclick="generateOutgoingReport()"
+          >
+            Outgoing Report
+          </button>
+        </div>
+        >
+      </form>
+
+      <div class="table-grid">
+        <div class="table-box">
+          <h3>🏆 Top Customers</h3>
+          <br />
+
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Sales</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% if top_customers %} {% for customer in top_customers %}
+              <tr>
+                <td>{{ customer.customer_name }}</td>
+                <td>₹{{ "{:,.2f}".format(customer.sales) }}</td>
+              </tr>
+              {% endfor %} {% else %}
+
+              <tr>
+                <td colspan="2" style="text-align: center">
+                  No customer data found
+                </td>
+              </tr>
+
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-box">
+          <h3>🏭 Top Suppliers</h3>
+          <br />
+
+          <table>
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Supply</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for supplier in top_suppliers %}
+              <tr>
+                <td>{{ supplier.supplier_name }}</td>
+                <td>
+                  {% if supplier.supply_kg > 0 %} {{ supplier.supply_kg }} KG {%
+                  endif %} {% if supplier.supply_kg > 0 and supplier.supply_ton
+                  > 0 %} / {% endif %} {% if supplier.supply_ton > 0 %} {{
+                  supplier.supply_ton }} Ton {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function getDates() {
+        const fromDate = document.querySelector('[name="from_date"]').value;
+
+        const toDate = document.querySelector('[name="to_date"]').value;
+
+        if (!fromDate || !toDate) {
+          alert("Please select both dates");
+          return null;
+        }
+
+        return { fromDate, toDate };
+      }
+
+      function generateFullReport() {
+        const dates = getDates();
+        if (!dates) return;
+
+        window.open(
+          `/export-pdf?from_date=${dates.fromDate}&to_date=${dates.toDate}`,
+          "_blank",
+        );
+      }
+
+      function generateIncomingReport() {
+        const dates = getDates();
+        if (!dates) return;
+
+        window.open(
+          `/export-incoming-pdf?from_date=${dates.fromDate}&to_date=${dates.toDate}`,
+          "_blank",
+        );
+      }
+
+      function generateOutgoingReport() {
+        const dates = getDates();
+        if (!dates) return;
+
+        window.open(
+          `/export-outgoing-pdf?from_date=${dates.fromDate}&to_date=${dates.toDate}`,
+          "_blank",
+        );
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,925 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incoming Wood Entry</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: #f5f1ea;
+        display: flex;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        width: 260px;
+        height: 100vh;
+        background: #2c241b;
+        color: white;
+        position: fixed;
+        padding: 25px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .logo h2 {
+        color: #d2b48c;
+      }
+
+      .menu {
+        list-style: none;
+      }
+
+      .menu li {
+        margin: 10px 0;
+      }
+
+      .menu a {
+        display: block;
+        padding: 14px;
+        text-decoration: none;
+        color: white;
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      .menu a:hover {
+        background: #8b5e3c;
+      }
+
+      /* Main */
+
+      .main {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 30px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .header h1 {
+        color: #2c241b;
+      }
+
+      /* Cards */
+
+      .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+      }
+
+      .form-card h3 {
+        margin-bottom: 20px;
+        color: #8b5e3c;
+        border-left: 5px solid #8b5e3c;
+        padding-left: 12px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-group label {
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .input-group input,
+      .input-group select,
+      .input-group textarea {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        outline: none;
+      }
+
+      .input-group input:focus,
+      .input-group select:focus {
+        border-color: #8b5e3c;
+      }
+
+      /* Summary */
+
+      .summary {
+        background: #fffaf4;
+        border: 2px dashed #d2b48c;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+      }
+
+      .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      /* Buttons */
+
+      .actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+      }
+
+      .save-btn {
+        background: #8b5e3c;
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .save-btn:hover {
+        background: #6c4427;
+      }
+
+      .reset-btn {
+        background: #ddd;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 900px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .main {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+      /* Incoming Wood History Table */
+
+.form-card{
+  margin-top: 10px;
+}
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.history-table thead {
+  background: #8b5e3c;
+  color: white;
+}
+
+.history-table th,
+.history-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.history-table th {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.history-table td {
+  font-size: 14px;
+  color: #444;
+}
+
+.history-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.history-table tbody tr:nth-child(even) {
+  background: #faf7f2;
+}
+
+.history-table tbody tr:hover {
+  background: #f3e8db;
+}
+
+.history-table td:last-child {
+  font-weight: 600;
+}
+
+.payment-paid {
+  color: #1e8e3e;
+}
+
+.payment-pending {
+  color: #d97706;
+}
+
+.payment-partial {
+  color: #2563eb;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+}
+
+.modal-content{
+    background:#fff;
+    width:60%;
+    max-width:850px;
+    margin:50px auto;
+    padding:30px;
+    border-radius:20px;
+    position:relative;
+}
+
+.close-btn{
+    position:absolute;
+    right:20px;
+    top:15px;
+    font-size:30px;
+    cursor:pointer;
+}
+
+.modal-content h2{
+    margin-bottom:20px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.input-group label{
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.input-group input,
+.input-group select{
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.modal-actions{
+    margin-top:25px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+}
+
+.cancel-btn{
+    background:#ddd;
+    border:none;
+    padding:12px 25px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.save-btn{
+    background:#8b5e3c;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 10px 15px;
+  text-decoration: none;
+  background: #f1f1f1;
+  color: #333;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.pagination a:hover {
+  background: #8b5e3c;
+  color: white;
+}
+
+.pagination a.active {
+  background: #8b5e3c;
+  color: white;
+}
+.edit,
+.delete,
+.search-btn{
+    background: #8b5e3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 4px;
+    transition: 0.3s;
+}
+
+.edit:hover,
+.delete:hover,
+.search-btn:hover{
+    background: #6f472c;
+}
+.history-search{
+    margin:20px 0;
+    display:flex;
+    justify-content:flex-left;
+}
+
+.history-search input{
+    width:300px;
+    padding:10px 14px;
+    border:1px solid #d4c1ad;
+    border-radius:8px;
+    font-size:14px;
+    outline:none;
+    background:white;
+}
+
+.history-search input:focus{
+    border-color:#8b5e3c;
+    box-shadow:0 0 5px rgba(139,94,60,0.2);
+}
+</style>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+      <h2>
+          🪵 {{ settings.company_name if settings and settings.company_name else
+          "JONDHALE SAW MILL" }}
+        </h2>
+      </div>
+
+      <ul class="menu">
+        <li><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li><a href="{{ url_for('inventory') }}">📦 Wood Inventory</a></li>
+        <li><a href="{{ url_for('incoming') }}">🚚 Incoming Wood</a></li>
+        <li><a href="{{ url_for('outgoing') }}">📤 Outgoing Wood</a></li>
+        <li><a href="{{ url_for('suppliers') }}">🏭 Suppliers</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}">📈 Reports</a></li>
+        <li><a href="/settings">⚙ Settings</a></li>
+        <li><a href="/logout">🚪 Logout</a></li>
+      </ul>
+    </div>
+
+    
+    <div class="main">
+      
+      <div class="header">
+        <h1>🚚 Incoming Wood Entry</h1>
+      </div>
+      <form action="{{ url_for('add_incoming_wood') }}" method="POST">
+        <!-- Supplier Information -->
+
+        <div class="form-card">
+          <h3>Supplier Information</h3>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Supplier Name</label>
+              <input type="text" name="supplier_name" required />
+            </div>
+
+            <div class="input-group">
+              <label>Contact Number</label>
+              <input type="text" name="contact_number" required/>
+            </div>
+
+            <div class="input-group">
+              <label>GST Number</label>
+              <input type="GST_Number" name="gst_number" />
+            </div>
+
+            <div class="input-group">
+              <label>Purchase Order No</label>
+              <input type="text" name="purchase_order_no" />
+            </div>
+          </div>
+        </div>
+
+       
+
+        <!-- Wood Information -->
+
+        <div class="form-card">
+          <h3>Wood Details</h3>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Wood Type</label>
+              <select name="wood_id" id="wood_id" required>
+                <option value="">Select Wood</option>
+
+                {% for wood in inventory %}
+                <option
+                    value="{{ wood.id }}"
+                    data-rate="{{ wood.rate }}"
+                >
+                  {{ wood.wood_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input-group">
+  <label>Unit</label>
+  <select id="unit" name="unit">
+    <option value="kg">KG</option>
+    <option value="ton">Ton</option>
+  </select>
+</div>
+
+
+ <div class="input-group">
+  <label>Dispatch Quantity</label>
+  <input
+    type="number"
+    step="0.01"
+    id="quantity"
+    name="quantity"
+    required
+  />
+</div>
+
+
+<div class="input-group">
+  <label>Rate Per Unit</label>
+  <input
+    type="number"
+    step="0.01"
+    id="rate"
+    name="rate"
+    required
+  />
+</div>
+
+<div class="input-group">
+  <label>Total Amount</label>
+  <input
+    type="number"
+    step="0.01"
+    id="total_amount"
+    name="total_amount"
+    readonly
+  />
+</div>
+
+            
+
+           
+
+            <div class="input-group">
+              <label>Payment Status</label>
+              <select name="payment_status">
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Partial">Partial</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Invoice Number</label>
+              <input type="text" name="invoice_number" />
+            </div>
+          </div>
+        </div>
+
+        
+
+<div class="summary">
+    <h4>Entry Summary</h4>
+
+    <br>
+
+    <div class="summary-item">
+        <span>Total Quantity</span>
+        <span id="summary_quantity">0 Logs</span>
+    </div>
+
+    <div class="summary-item">
+    <span>Unit</span>
+    <span id="summary_unit">KG</span>
+</div>
+
+    <div class="summary-item">
+        <span>Total Purchase Value</span>
+        <span id="summary_amount">₹0.00</span>
+    </div>
+</div>
+
+          <div class="actions">
+            <button type="submit" class="save-btn">💾 Save Entry</button>
+            <button type="reset" class="reset-btn">Reset</button>
+              </div>
+              <div class="history-search">
+    <input
+        type="text"
+        id="historySearch"
+        placeholder="Search supplier, wood, mobile, payment..."
+    >
+</div>
+<div class="form-card" id="history-section">
+  <h3>Incoming Wood History</h3>
+
+  <div class="table-wrapper">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Supplier</th>
+          <th>Mobile No.</th>
+          <th>Wood</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% if incoming_entries %}
+
+          {% for item in incoming_entries %}
+          <tr>
+
+            <td>{{ item.supplier_name }}</td>
+            <td>{{ item.contact_number }}</td>
+            <td>{{ item.wood_name }}</td>
+
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit|upper }}</td>
+
+            <td>₹{{ item.rate }}</td>
+            <td>₹{{ item.total_amount }}</td>
+
+            <td class="
+              {% if item.payment_status == 'Paid' %}
+                payment-paid
+              {% elif item.payment_status == 'Pending' %}
+                payment-pending
+              {% else %}
+                payment-partial
+              {% endif %}
+            ">
+              {{ item.payment_status }}
+            </td>
+
+            <!-- ACTIONS -->
+            <td>
+
+              <!-- EDIT -->
+           <button
+type="button"
+class="edit"
+onclick="editIncoming(
+'{{ item.id }}',
+'{{ item.supplier_name }}',
+'{{ item.contact_number }}',
+'{{ item.quantity }}',
+'{{ item.unit }}',
+'{{ item.rate }}',
+'{{ item.total_amount }}',
+'{{ item.payment_status }}'
+)">
+Edit
+</button>
+
+              <!-- DELETE -->
+              <a href="/delete_incoming/{{ item.id }}"
+                 onclick="return confirm('Are you sure you want to delete this entry?')">
+                <button class="delete" type="button">
+                  Delete
+                </button>
+              </a>
+
+              <!-- PDF -->
+              <a href="/incoming_pdf/{{ item.id }}" target="_blank">
+                <button class="search-btn" type="button">
+                  PDF
+                </button>
+              </a>
+
+            </td>
+
+          </tr>
+          {% endfor %}
+
+        {% else %}
+
+          <tr>
+            <td colspan="9" class="no-data">
+              No incoming wood entries found.
+            </td>
+          </tr>
+
+        {% endif %}
+      </tbody>
+    </table>
+    <div class="pagination">
+
+    {% if page > 1 %}
+    <a href="{{ url_for('incoming', page=page-1) }}#history-section">
+        Previous
+    </a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+
+    <a
+        href="{{ url_for('incoming', page=p) }}#history-section"
+        class="{% if p == page %}active{% endif %}"
+    >
+        {{ p }}
+    </a>
+
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('incoming', page=page+1) }}#history-section">
+        Next
+    </a>
+    {% endif %}
+
+</div>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </form>
+
+      
+ 
+<script>
+function calculateAmount() {
+
+    const qty =
+        parseFloat(document.getElementById("quantity").value) || 0;
+
+    const rate =
+        parseFloat(document.getElementById("rate").value) || 0;
+
+    const unit =
+        document.getElementById("unit").value;
+
+    const total = qty * rate;
+
+    document.getElementById("total_amount").value =
+        total.toFixed(2);
+
+    document.getElementById("summary_quantity").textContent =
+        qty + " " + unit.toUpperCase();
+
+    document.getElementById("summary_unit").textContent =
+        unit.toUpperCase();
+
+    document.getElementById("summary_amount").textContent =
+        "₹" + total.toLocaleString("en-IN");
+}
+
+document
+.getElementById("quantity")
+.addEventListener("input", calculateAmount);
+
+document
+.getElementById("rate")
+.addEventListener("input", calculateAmount);
+
+document
+.getElementById("unit")
+.addEventListener("change", calculateAmount);
+</script>
+
+<script>
+
+function editIncoming(
+    id,
+    supplier,
+    contact,
+    quantity,
+    unit,
+    rate,
+    amount,
+    payment
+){
+
+    document.getElementById("edit_id").value = id;
+    document.getElementById("edit_supplier").value = supplier;
+    document.getElementById("edit_contact").value = contact;
+    document.getElementById("edit_quantity").value = quantity;
+    document.getElementById("edit_unit").value = unit;
+    document.getElementById("edit_rate").value = rate;
+    document.getElementById("edit_amount").value = amount;
+    document.getElementById("edit_payment").value = payment;
+
+    document.getElementById("editModal").style.display = "block";
+}
+
+function calculateEditAmount(){
+
+    const qty =
+        parseFloat(document.getElementById("edit_quantity").value) || 0;
+
+    const rate =
+        parseFloat(document.getElementById("edit_rate").value) || 0;
+
+    const total = qty * rate;
+
+    document.getElementById("edit_amount").value =
+        total.toFixed(2);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    document
+    .getElementById("edit_quantity")
+    .addEventListener("input", calculateEditAmount);
+
+    document
+    .getElementById("edit_rate")
+    .addEventListener("input", calculateEditAmount);
+
+});
+
+function closeEditModal(){
+    document.getElementById("editModal").style.display = "none";
+}
+
+window.onclick = function(event){
+
+    const modal = document.getElementById("editModal");
+
+    if(event.target == modal){
+        modal.style.display = "none";
+    }
+}
+
+</script>
+<div id="editModal" class="modal">
+  <div class="modal-content">
+
+    <span class="close-btn" onclick="closeEditModal()">&times;</span>
+
+    <h2>Edit Incoming Entry</h2>
+
+    <form action="/update_incoming" method="POST">
+
+      <input type="hidden" id="edit_id" name="id">
+
+      <div class="form-grid">
+
+        <div class="input-group">
+          <label>Supplier Name</label>
+          <input type="text" id="edit_supplier" name="supplier_name" required>
+        </div>
+
+        <div class="input-group">
+          <label>Mobile Number</label>
+          <input type="text" id="edit_contact" name="contact_number">
+        </div>
+
+        <div class="input-group">
+          <label>Quantity</label>
+          <input type="number" step="0.01" id="edit_quantity" name="quantity" required>
+        </div>
+
+        <div class="input-group">
+          <label>Unit</label>
+          <select id="edit_unit" name="unit">
+            <option value="kg">KG</option>
+            <option value="ton">TON</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Rate</label>
+          <input type="number" step="0.01" id="edit_rate" name="rate" required>
+        </div>
+
+        <div class="input-group">
+          <label>Total Amount</label>
+          <input type="number" step="0.01" id="edit_amount" name="total_amount" required>
+        </div>
+
+        <div class="input-group">
+          <label>Payment Status</label>
+          <select id="edit_payment" name="payment_status">
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Partial">Partial</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        
+
+        <button type="submit" class="save-btn">
+          Save Changes
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+<script>
+document.getElementById("historySearch").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll(".history-table tbody tr");
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(value)){
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+});
+</script>
+
+  </body>
+</html>

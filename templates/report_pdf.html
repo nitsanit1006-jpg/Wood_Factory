@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Business Report Invoice</title>
+
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 15mm;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      .invoice-box {
+        width: 900px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border: 2px solid black;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid black;
+        padding-bottom: 15px;
+      }
+
+      .company-name {
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .report-info {
+        font-size: 13px;
+        margin-top: 10px;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 15px 0 5px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th {
+        background: #fff;
+        padding: 10px;
+        text-align: center;
+      }
+
+      td {
+        padding: 8px;
+        text-align: center;
+      }
+
+      .summary-table th,
+      .summary-table td {
+        padding: 10px;
+      }
+
+      .btn {
+        padding: 10px 15px;
+        text-decoration: none;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+        margin-top: 15px;
+      }
+
+      .print {
+        background: green;
+      }
+
+      .back {
+        background: #444;
+      }
+
+      @media print {
+        .print,
+        .back {
+          display: none;
+        }
+
+        body {
+          background: white;
+        }
+
+        .invoice-box {
+          border: none;
+          width: 100%;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="invoice-box">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="company-name">{{ settings.company_name }}</div>
+
+        <div class="report-info">
+          <b>Report Period:</b> {{ from_date }} to {{ to_date }} <br />
+          <b>Generated On:</b> {{ current_date }}
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="section-title">Business Summary</div>
+
+      <table class="summary-table">
+        <tr>
+          <th>Total Revenue</th>
+          <th>Purchase Cost</th>
+          <th>Net Profit</th>
+          <th>Total Imports</th>
+          <th>Total Exports</th>
+        </tr>
+
+        <tr>
+          <td>₹ {{ "{:,.2f}".format(total_revenue) }}</td>
+          <td>₹ {{ "{:,.2f}".format(purchase_cost) }}</td>
+          <td>₹ {{ "{:,.2f}".format(total_profit) }}</td>
+          <td>{{ imports.import_kg }} KG / {{ imports.import_ton }} Ton</td>
+          <td>{{ exports.export_kg }} KG / {{ exports.export_ton }} Ton</td>
+        </tr>
+      </table>
+
+      <!-- INCOMING -->
+      <div class="section-title">Incoming Wood Details</div>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Wood</th>
+          <th>Supplier</th>
+          <th>Qty</th>
+          <th>Unit</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+
+        {% for row in incoming_records %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td>{{ row.wood_name }}</td>
+          <td>{{ row.supplier_name }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.unit }}</td>
+          <td>₹ {{ row.rate }}</td>
+          <td>₹ {{ row.total_amount }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <!-- OUTGOING -->
+      <div class="section-title">Outgoing Wood Details</div>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Wood</th>
+          <th>Customer</th>
+          <th>Qty</th>
+          <th>Unit</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+
+        {% for row in outgoing_records %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td>{{ row.wood_name }}</td>
+          <td>{{ row.customer_name }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.unit }}</td>
+          <td>₹ {{ row.rate }}</td>
+          <td>₹ {{ row.total_amount }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <!-- BUTTONS -->
+      <div style="text-align: center">
+        <button class="btn print" onclick="window.print()">
+          🖨 Print Report
+        </button>
+        <a href="/bill-history" class="btn back">⬅ Back</a>
+      </div>
+    </div>
+  </body>
+</html>

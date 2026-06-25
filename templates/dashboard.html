@@ -1,0 +1,515 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WoodTrack Pro Dashboard</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: #f5f1ea;
+        display: flex;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        width: 260px;
+        height: 100vh;
+        background: #2c241b;
+        color: white;
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 25px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .logo h2 {
+        color: #d2b48c;
+      }
+
+      .menu {
+        list-style: none;
+      }
+
+      .menu li {
+        margin: 10px 0;
+      }
+
+      .menu a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 14px;
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      .menu a:hover {
+        background: #8b5e3c;
+      }
+
+      /* Main */
+
+      .main {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 30px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .topbar h1 {
+        color: #2c241b;
+      }
+
+      .user {
+        background: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Cards */
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card h3 {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .card h2 {
+        margin-top: 10px;
+        color: #2c241b;
+      }
+
+      .icon {
+        font-size: 28px;
+      }
+
+      /* Charts */
+
+      .chart-section {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+      }
+
+      .chart-box {
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Table */
+
+      .table-box {
+        margin-top: 30px;
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table th {
+        background: #8b5e3c;
+        color: white;
+        padding: 12px;
+      }
+
+      table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .status {
+        background: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+      /* Filter Section */
+
+      .filter-box {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 25px;
+      }
+
+      #periodFilter {
+        min-width: 180px;
+        padding: 12px 18px;
+        border: 2px solid #d2b48c;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #2c241b;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      #periodFilter:hover {
+        border-color: #8b5e3c;
+      }
+
+      #periodFilter:focus {
+        border-color: #8b5e3c;
+        box-shadow: 0 0 0 4px rgba(139, 94, 60, 0.15);
+      }
+
+      #periodFilter option {
+        background: #ffffff;
+        color: #2c241b;
+      }
+      .chart-box {
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        height: 400px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+        <h2>
+          🪵 {{ settings.company_name if settings and settings.company_name else
+          "JONDHALE SAW MILL" }}
+        </h2>
+      </div>
+
+      <ul class="menu">
+        <li><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li><a href="{{ url_for('inventory') }}">📦 Wood Inventory</a></li>
+        <li><a href="{{ url_for('incoming') }}">🚚 Incoming Wood</a></li>
+        <li><a href="{{ url_for('outgoing') }}">📤 Outgoing Wood</a></li>
+        <li><a href="{{ url_for('suppliers') }}">🏭 Suppliers</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}">📈 Reports</a></li>
+        <li><a href="/settings">⚙ Settings</a></li>
+        <li><a href="/logout">🚪 Logout</a></li>
+      </ul>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <h1>Dashboard Overview</h1>
+        <div class="user">👤 Admin</div>
+      </div>
+      <div class="filter-box">
+        <select id="periodFilter">
+          <option value="today">Today</option>
+          <option value="week">Weekly</option>
+          <option value="month">Monthly</option>
+        </select>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="icon">📦</div>
+          <h3>Total Stock</h3>
+          <h2>{{ total_kg }} KG / {{ total_ton }} Ton</h2>
+        </div>
+
+        <div class="card">
+          <div class="icon">🚚</div>
+          <h3 id="incomingLabel">Incoming Today</h3>
+          <h2 id="incomingValue">
+            {{ incoming_kg }} KG / {{ incoming_ton }} Ton
+          </h2>
+        </div>
+
+        <div class="card">
+          <div class="icon">📤</div>
+          <h3 id="outgoingLabel">Outgoing Today</h3>
+          <h2 id="outgoingValue">
+            {{ outgoing_kg }} KG / {{ outgoing_ton }} Ton
+          </h2>
+        </div>
+
+        <div class="card">
+          <div class="icon">📥</div>
+          <h3>Incoming Revenue</h3>
+          <h2 id="incomingRevenueValue">
+            ₹{{ "{:,.2f}".format(incoming_revenue) }}
+          </h2>
+        </div>
+
+        <div class="card">
+          <div class="icon">📤</div>
+          <h3>Outgoing Revenue</h3>
+          <h2 id="outgoingRevenueValue">
+            ₹{{ "{:,.2f}".format(outgoing_revenue) }}
+          </h2>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-box">
+          <h3>Monthly Import vs Export</h3>
+          <canvas id="barChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <h3>Wood Types</h3>
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+
+      <div class="table-box">
+        <h3>Recent Transactions</h3>
+
+        <br />
+
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Wood Type</th>
+              <th>Quantity</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="transactionTableBody">
+            {% for item in recent_transactions %}
+            <tr>
+              <td>{{ item.date }}</td>
+
+              <td>{{ item.wood_name }}</td>
+
+              <td>{{ item.quantity }} {{ item.unit|upper }}</td>
+
+              <td>
+                <span class="status {{ item.status|lower }}">
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      async function loadDashboardData(period) {
+        try {
+          const response = await fetch(`/dashboard-data/${period}`);
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch dashboard data");
+          }
+
+          const data = await response.json();
+
+          document.getElementById("incomingValue").innerText =
+            `${Number(data.incoming_kg).toLocaleString("en-IN")} KG / ` +
+            `${Number(data.incoming_ton).toLocaleString("en-IN")} Ton`;
+
+          document.getElementById("outgoingValue").innerText =
+            `${Number(data.outgoing_kg).toLocaleString("en-IN")} KG / ` +
+            `${Number(data.outgoing_ton).toLocaleString("en-IN")} Ton`;
+
+          document.getElementById("incomingRevenueValue").innerText =
+            "₹" + Number(data.incoming_revenue).toLocaleString("en-IN");
+
+          document.getElementById("outgoingRevenueValue").innerText =
+            "₹" + Number(data.outgoing_revenue).toLocaleString("en-IN");
+
+          const labels = {
+            today: "Today",
+            week: "This Week",
+            month: "This Month",
+          };
+
+          document.getElementById("incomingLabel").innerText =
+            `Incoming ${labels[period]}`;
+
+          document.getElementById("outgoingLabel").innerText =
+            `Outgoing ${labels[period]}`;
+        } catch (error) {
+          console.error("Dashboard error:", error);
+        }
+      }
+
+      document
+        .getElementById("periodFilter")
+        .addEventListener("change", function () {
+          const period = this.value;
+
+          loadDashboardData(period);
+          loadChartData(period);
+        });
+
+      window.addEventListener("load", function () {
+        loadDashboardData("today");
+      });
+    </script>
+
+    <script>
+      // Create charts with empty data initially
+
+      const barChart = new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Incoming",
+              data: [],
+              backgroundColor: "#8b5e3c",
+            },
+            {
+              label: "Outgoing",
+              data: [],
+              backgroundColor: "#d2b48c",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        },
+      });
+
+      const pieChart = new Chart(document.getElementById("pieChart"), {
+        type: "doughnut",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              data: [],
+              backgroundColor: [
+                "#8b5e3c", // Brown
+                "#d2b48c", // Tan
+                "#6b8e23", // Olive
+                "#4682b4", // Steel Blue
+                "#ff7f50", // Coral
+                "#9370db", // Purple
+                "#20b2aa", // Teal
+                "#dc3545", // Red
+                "#ffc107", // Yellow
+                "#28a745", // Green
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+          },
+        },
+      });
+
+      async function loadChartData(period) {
+        try {
+          const response = await fetch(`/chart-data/${period}`);
+
+          if (!response.ok) {
+            throw new Error("Failed to load chart data");
+          }
+
+          const data = await response.json();
+
+          const labels = [
+            ...new Set([
+              ...data.incoming.map((item) => item.wood_name),
+              ...data.outgoing.map((item) => item.wood_name),
+            ]),
+          ];
+
+          const incomingData = labels.map((label) => {
+            const item = data.incoming.find((i) => i.wood_name === label);
+            return item ? Number(item.incoming) : 0;
+          });
+
+          const outgoingData = labels.map((label) => {
+            const item = data.outgoing.find((i) => i.wood_name === label);
+            return item ? Number(item.outgoing) : 0;
+          });
+
+          // Update bar chart
+          barChart.data.labels = labels;
+          barChart.data.datasets[0].data = incomingData;
+          barChart.data.datasets[1].data = outgoingData;
+          barChart.update();
+
+          // Update pie chart (incoming stock distribution)
+          pieChart.data.labels = labels;
+          pieChart.data.datasets[0].data = incomingData;
+          pieChart.update();
+        } catch (error) {
+          console.error("Chart error:", error);
+        }
+      }
+
+      // Reload charts when period changes
+
+      // Load today's charts on page open
+      window.addEventListener("load", function () {
+        loadChartData("today");
+      });
+    </script>
+  </body>
+</html>
